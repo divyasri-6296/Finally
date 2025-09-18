@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Supermarket Management - Local</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+    }
+    .container { max-width: 1024px; }
+    .manager-dashboard-section { display: none; }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+  <div id="app-container" class="container w-full bg-white shadow-xl rounded-xl p-8 transition-all duration-300">
+    <!-- Login View -->
+    <div id="login-view" class="flex flex-col items-center space-y-6">
+      <h1 class="text-4xl font-bold text-gray-800">Supermarket Management</h1>
+      <p class="text-gray-500">Sign in to continue</p>
+      <div class="flex space-x-4">
+        <button id="employee-login-btn" class="px-6 py-3 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-colors shadow-md">Login as Employee</button>
+        <button id="manager-login-btn" class="px-6 py-3 bg-green-600 text-white rounded-full font-semibold hover:bg-green-700 transition-colors shadow-md">Login as Manager</button>
+      </div>
+    </div>
+
+    <!-- Main App View -->
+    <div id="main-app-view" class="hidden">
+      <header class="flex justify-between items-center mb-6 border-b pb-4">
+        <h2 id="welcome-message" class="text-2xl font-bold text-gray-700"></h2>
+        <div class="flex items-center space-x-4">
+          <span id="user-id-display" class="text-sm text-gray-500 rounded-full px-3 py-1 bg-gray-100"></span>
+          <button id="logout-btn" class="px-4 py-2 bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 transition-colors">Logout</button>
+        </div>
+      </header>
+
+      <!-- Employee View -->
+      <div id="employee-view" class="space-y-6">
+        <div class="bg-blue-50 rounded-lg p-6 shadow-sm">
+          <h3 class="text-xl font-bold text-blue-800 mb-2">My Daily Performance</h3>
+          <p id="bill-count" class="text-3xl font-bold text-blue-600">0</p>
+          <p class="text-gray-500">bills processed today</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-6 shadow-sm">
+          <h3 class="text-xl font-bold text-gray-700 mb-4">Billing Process</h3>
+          <form id="billing-form" class="space-y-4">
+            <div>
+              <label for="product-name" class="block text-sm font-medium text-gray-700">Product Name</label>
+              <input type="text" id="product-name" list="product-list" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="Search for a product..." required>
+              <datalist id="product-list"></datalist>
+            </div>
+            <div>
+              <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+              <input type="number" id="quantity" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" min="1" required>
+            </div>
+            <button type="submit" class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors">Add to Bill</button>
+          </form>
+          
+          <div class="mt-6">
+            <h4 class="text-lg font-bold text-gray-700 mb-2">Current Bill</h4>
+            <div id="current-bill-items" class="bg-white rounded-lg border border-gray-200 p-4 shadow-inner space-y-2">
+              <p class="text-gray-400 text-center">No items added yet.</p>
+            </div>
+            <div class="flex justify-between items-center mt-4">
+              <span class="text-xl font-bold text-gray-800">Total: <span id="bill-total">0.00</span></span>
+              <button id="complete-bill-btn" class="py-2 px-6 bg-green-600 text-white font-semibold rounded-full hover:bg-green-700 transition-colors shadow-md disabled:opacity-50" disabled>Complete Bill</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Manager View -->
+      <div id="manager-view" class="manager-dashboard-section space-y-8">
+        <nav class="flex space-x-4 border-b pb-2 mb-4">
+          <button id="tab-sales" class="tab-btn px-4 py-2 rounded-lg font-semibold text-gray-600 hover:bg-gray-100">Sales</button>
+          <button id="tab-performance" class="tab-btn px-4 py-2 rounded-lg font-semibold text-gray-600 hover:bg-gray-100">Performance</button>
+          <button id="tab-products" class="tab-btn px-4 py-2 rounded-lg font-semibold text-gray-600 hover:bg-gray-100">Products</button>
+          <button id="tab-restock" class="tab-btn px-4 py-2 rounded-lg font-semibold text-gray-600 hover:bg-gray-100">Restock</button>
+          <button id="tab-expiry" class="tab-btn px-4 py-2 rounded-lg font-semibold text-gray-600 hover:bg-gray-100">Expiry</button>
+          <button id="tab-insights" class="tab-btn px-4 py-2 rounded-lg font-semibold text-gray-600 hover:bg-gray-100">Insights</button>
+        </nav>
+
+        <div id="sales-section" class="tab-content hidden">
+          <h3 class="text-2xl font-bold text-gray-700 mb-4">Sales Per Day</h3>
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Sales</th>
+              </tr>
+            </thead>
+            <tbody id="sales-table" class="bg-white divide-y divide-gray-200"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="relative p-6 bg-white rounded-lg shadow-xl w-96 mx-auto text-center">
+      <h3 id="modal-title" class="text-lg font-bold mb-4"></h3>
+      <p id="modal-message" class="text-gray-600 mb-6"></p>
+      <button id="modal-close-btn" class="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">OK</button>
+    </div>
+  </div>
+
+  <script>
+    let localData = { products: [], users: [], bills: [] };
+    let userId=null, userRole=null, currentBill=[]; 
+    const THRESHOLD=10;
+
+    const loginView=document.getElementById('login-view');
+    const mainAppView=document.getElementById('main-app-view');
+    const employeeView=document.getElementById('employee-view');
+    const managerView=document.getElementById('manager-view');
+    const welcomeMessage=document.getElementById('welcome-message');
+    const userIdDisplay=document.getElementById('user-id-display');
+    const productNameInput=document.getElementById('product-name');
+    const quantityInput=document.getElementById('quantity');
+    const modal=document.getElementById('modal');
+    const modalTitle=document.getElementById('modal-title');
+    const modalMessage=document.getElementById('modal-message');
+    const tabButtons=document.querySelectorAll('.tab-btn');
+    const tabContents=document.querySelectorAll('.tab-content');
+
+    function showLoginView(){ 
+      loginView.style.display='flex'; 
+      mainAppView.classList.add('hidden'); 
+    }
+    function showMainAppView(){ 
+      loginView.style.display='none'; 
+      mainAppView.classList.remove('hidden'); 
+    }
+    function showModal(title,message){ 
+      modalTitle.textContent=title; 
+      modalMessage.textContent=message; 
+      modal.style.display='flex'; 
+    }
+
+    document.getElementById('employee-login-btn').addEventListener('click',()=>{
+      userId='employee-1'; userRole='employee';
+      showMainAppView();
+      userIdDisplay.textContent=`User ID: ${userId}`;
+      welcomeMessage.textContent='Welcome, Employee!';
+      employeeView.style.display='block'; 
+      managerView.style.display='none';
+    });
+
+    document.getElementById('manager-login-btn').addEventListener('click',()=>{
+      userId='manager-1'; userRole='manager';
+      showMainAppView();
+      userIdDisplay.textContent=`User ID: ${userId}`;
+      welcomeMessage.textContent='Welcome, Manager!';
+      employeeView.style.display='none'; 
+      managerView.style.display='block';
+    });
+
+    document.getElementById('logout-btn').addEventListener('click',()=>{
+      userId=null; userRole=null; 
+      showLoginView();
+      showModal('Logged Out','You have been successfully logged out.');
+    });
+
+    document.getElementById('billing-form').addEventListener('submit',(e)=>{
+      e.preventDefault();
+      const productName=productNameInput.value;
+      const quantity=parseInt(quantityInput.value,10);
+      const product=localData.products.find(p=>p.name.toLowerCase()===productName.toLowerCase());
+      if(!product){ showModal('Error','Product not found.'); return; }
+      if(product.stock<quantity){ 
+        showModal('Error',`Not enough stock for ${product.name}. Available: ${product.stock}`); 
+        return; 
+      }
+      currentBill.push({id:product.id,name:product.name,price:product.price,quantity});
+    });
+
+    function showTab(tabId){
+      tabButtons.forEach(btn=>btn.classList.remove('bg-gray-200','text-blue-600','font-bold'));
+      tabContents.forEach(c=>c.classList.add('hidden'));
+      document.getElementById(`tab-${tabId}`).classList.add('bg-gray-200','text-blue-600','font-bold');
+      document.getElementById(`${tabId}-section`).classList.remove('hidden');
+    }
+
+    document.getElementById('modal-close-btn').addEventListener('click',()=>{ modal.style.display='none'; });
+  </script>
+</body>
+</html>
+
